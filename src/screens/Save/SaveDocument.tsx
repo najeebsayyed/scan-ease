@@ -5,11 +5,13 @@ import ScreenHeader from '../../components/ScreenHeader';
 import FormatChip from '../../components/FormatChip';
 import PrimaryButton from '../../components/PrimaryButton';
 import SectionLabel from '../../components/SectionLabel';
+import { useNavigation } from '@react-navigation/native';
 
 import PdfIcon from '../../assets/icons/pdf.svg';
 import JpgIcon from '../../assets/icons/jpg.svg';
 import PngIcon from '../../assets/icons/png.svg';
 import DownloadIcon from '../../assets/icons/download.svg';
+import HomeIcon from '../../assets/icons/home_outline.svg';
 
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
@@ -20,6 +22,7 @@ import { Buffer } from 'buffer';
 globalThis.Buffer = Buffer;
 
 export default function SaveDocument({ route }) {
+  const navigation = useNavigation<any>();
   const { scannedImages } = route.params;
 
   const [selectedFormat, setSelectedFormat] = useState('PDF');
@@ -119,9 +122,17 @@ export default function SaveDocument({ route }) {
 
   return (
     <View className="flex-1 px-3">
-      <ScreenHeader title="Save Document" />
+      <ScreenHeader
+        title="Save Document"
+        RightIcon={HomeIcon}
+        onRightPress={() =>
+          navigation.navigate('MainTabs', {
+            screen: 'Home',
+          })
+        }
+      />
 
-      <View className="h-[40%] w-full mt-5 rounded-3xl self-center bg-primary justify-center">
+      <View className="h-[40%] w-full mt-10 rounded-3xl self-center bg-primary justify-center">
         <Image
           source={{ uri: scannedImages[selectedPage] }}
           className="h-[95%] w-[95%] rounded-xl self-center"

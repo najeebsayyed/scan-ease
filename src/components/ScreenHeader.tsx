@@ -1,13 +1,17 @@
+import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import ArrowBackIcon from '../assets/icons/arrow_back.svg';
 import type { NavigationProp } from '@react-navigation/native';
+
+import ArrowBackIcon from '../assets/icons/arrow_back.svg';
 
 type ScreenHeaderProps = {
   title: string;
   classname?: string;
   titleStyle?: string;
   showBack?: boolean;
+  RightIcon?: React.ComponentType<any>;
+  onRightPress?: () => void;
 };
 
 const ScreenHeader = ({
@@ -15,6 +19,8 @@ const ScreenHeader = ({
   classname = '',
   titleStyle = '',
   showBack = true,
+  RightIcon,
+  onRightPress,
 }: ScreenHeaderProps) => {
   const navigation =
     useNavigation<NavigationProp<Record<string, object | undefined>>>();
@@ -27,7 +33,7 @@ const ScreenHeader = ({
 
   return (
     <View
-      className={`pt-12 pb-2  flex-row items-center justify-between ${classname}`}
+      className={`pt-12 pb-2 flex-row items-center justify-between ${classname}`}
     >
       {/* Left */}
       <View className="w-8">
@@ -45,8 +51,14 @@ const ScreenHeader = ({
         {title}
       </Text>
 
-      {/* Right Spacer */}
-      <View className="w-8" />
+      {/* Right */}
+      <View className="w-8 items-end">
+        {RightIcon && (
+          <TouchableOpacity onPress={onRightPress}>
+            <RightIcon width={30} height={30} color={'#000000'} />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
