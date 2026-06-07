@@ -13,6 +13,11 @@ import DownloadIcon from '../../assets/icons/download.svg';
 
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
+import { PDFDocument } from 'pdf-lib';
+import RNFS from 'react-native-fs';
+import { Buffer } from 'buffer';
+
+globalThis.Buffer = Buffer;
 
 export default function PreviewScreen({ route }) {
   const { scannedImages } = route.params;
@@ -51,7 +56,52 @@ export default function PreviewScreen({ route }) {
       }
 
       if (selectedFormat === 'PDF') {
-        Alert.alert('Coming Soon', 'PDF export is not implemented yet.');
+        const pdfDoc = await PDFDocument.create();
+
+        for (const imageUri of scannedImages) {
+          console.log('Processing:', imageUri);
+
+          const imagePath = imageUri.replace('file://', '');
+
+          const imageBase64 = await RNFS.readFile(imagePath, 'base64');
+
+          const imageBytes = Buffer.from(imageBase64, 'base64');
+
+          let embeddedImage;
+
+          if (imageUri.toLowerCase().includes('.png')) {
+            embeddedImage = await pdfDoc.embedPng(imageBytes);
+          } else {
+            embeddedImage = await pdfDoc.embedJpg(imageBytes);
+          }
+
+          const width = embeddedImage.width;
+          const height = embeddedImage.height;
+
+          const page = pdfDoc.addPage([width, height]);
+
+          page.drawImage(embeddedImage, {
+            x: 0,
+            y: 0,
+            width,
+            height,
+          });
+        }
+
+        const pdfBytes = await pdfDoc.save();
+
+        const pdfPath = `${
+          RNFS.DownloadDirectoryPath
+        }/DocScanner_${Date.now()}.pdf`;
+
+        await RNFS.writeFile(
+          pdfPath,
+          Buffer.from(pdfBytes).toString('base64'),
+          'base64',
+        );
+
+        Alert.alert('PDF Saved', `PDF saved successfully.\n\n${pdfPath}`);
+
         return;
       }
 
@@ -60,9 +110,10 @@ export default function PreviewScreen({ route }) {
         `Document saved as ${savedFormat} in gallery.`,
       );
     } catch (error) {
-      console.log(error);
+      console.log('PDF ERROR:', error);
+      console.log('PDF ERROR STRING:', JSON.stringify(error));
 
-      Alert.alert('Save Failed', 'Unable to save document. Please try again.');
+      Alert.alert('Save Failed', error?.message || 'Unable to save document.');
     }
   };
 
