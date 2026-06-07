@@ -19,7 +19,7 @@ import { Buffer } from 'buffer';
 
 globalThis.Buffer = Buffer;
 
-export default function PreviewScreen({ route }) {
+export default function SaveDocument({ route }) {
   const { scannedImages } = route.params;
 
   const [selectedFormat, setSelectedFormat] = useState('PDF');
@@ -119,7 +119,7 @@ export default function PreviewScreen({ route }) {
 
   return (
     <View className="flex-1 px-3">
-      <ScreenHeader title="Preview" />
+      <ScreenHeader title="Save Document" />
 
       <View className="h-[40%] w-full mt-5 rounded-3xl self-center bg-primary justify-center">
         <Image

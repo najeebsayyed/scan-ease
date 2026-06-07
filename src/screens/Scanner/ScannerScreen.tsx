@@ -10,7 +10,7 @@ export default function ScannerScreen() {
       const result = await DocumentScanner.scanDocument();
 
       if (result?.scannedImages?.length > 0) {
-        navigation.navigate('Preview', {
+        navigation.navigate('Save', {
           scannedImages: result.scannedImages,
         });
       } else {
